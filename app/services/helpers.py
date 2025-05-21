@@ -1,7 +1,10 @@
 from langchain_community.document_loaders import PyPDFLoader, DirectoryLoader
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-
+import random
+import string
+from datetime import datetime, timedelta
+from app.core.config import settings
 # extract text from pdf files
 
 
@@ -23,5 +26,14 @@ def text_split(extracted_data):
 
 # download embeddings from huggingface.co
 def download_huggingface_embeddings():
-    embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
+    embeddings = HuggingFaceEmbeddings(
+        model_name="sentence-transformers/all-MiniLM-L6-v2")
     return embeddings
+
+
+def generate_otp(length: int = 6):
+    return ''.join(random.choices(string.digits, k=length))
+
+
+def otp_expiration_time() -> datetime:
+    return datetime.utcnow() + timedelta(minutes=settings.OTP_EXPIRATION_MINUTES)

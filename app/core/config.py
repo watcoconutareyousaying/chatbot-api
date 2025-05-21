@@ -1,8 +1,10 @@
 import os
 from dotenv import load_dotenv
+from pydantic_settings import BaseSettings
 
 # Load environment variables from a .env file
 load_dotenv()
+
 
 def get_env_var(name: str) -> str:
     value = os.environ.get(name)
@@ -17,12 +19,23 @@ def setup_api_keys() -> None:
         deepseek_key = get_env_var("DEEPSEEK_API_KEY")
         openai_key = os.environ.get("OPENAI_API_KEY")
         llm_provider = get_env_var("LLM_PROVIDER")
-        
+
         os.environ["PINECONE_API_KEY"] = pinecone_key
         os.environ["DEEPSEEK_API_KEY"] = deepseek_key
         os.environ["OPENAI_API_KEY"] = openai_key  # type: ignore
         os.environ["LLM_PROVIDER"] = llm_provider
-        
+
     except ValueError as e:
         print(f"Configuration error: {e}")
         exit(1)
+
+
+class Settings(BaseSettings):
+    DATABASE_URL: str
+    OTP_EXPIRATION_MINUTES: int = 5
+
+    class config:
+        env_file = ".env"
+
+
+settings = Settings() # type: ignore
